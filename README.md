@@ -2,6 +2,8 @@
 OCR_textline_editor is a Python-based tool that helps users interactively review and edit OCR-predicted text from image-based documents. The tool provides an interface for inspecting textline predictions, 
 modifying them as needed, and saving the edits to XML files.
 
+![Tool Screenshot](docs/textline_editor_screenshot.png)
+
 ## Features
 * Interactive Textline Hover: Hover over an image to view the text content of individual textlines.
 * Inline Text Editing: Click on a textline to open an editable text bar for quick modifications.
