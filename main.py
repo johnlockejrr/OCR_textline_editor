@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt, QRectF, QPointF
 import xml.etree.ElementTree as ET
 import numpy as np
 import json
+from PIL import Image
 
 class TextlineEditorApp(QMainWindow):
     def __init__(self):
@@ -35,7 +36,12 @@ class TextlineEditorApp(QMainWindow):
             sys.exit()
             
             
-        self.pixmap = QPixmap(self.image_path)
+        if self.image_path.lower().endswith(('.tif', '.tiff')):
+            tiff_image = Image.open(self.image_path)
+            tiff_image.save("temp_image.png")
+            self.pixmap = QPixmap("temp_image.png")
+        else:
+            self.pixmap = QPixmap(self.image_path)
         image_width = self.pixmap.width()
         image_height = self.pixmap.height()
         
@@ -213,7 +219,10 @@ class TextlineEditorApp(QMainWindow):
         self.highlighted_textline = None  # Reset highlighted textline
 
         # Draw the image and highlight the textline under the mouse
-        painter_pixmap = QPixmap(self.image_path)
+        if self.image_path.lower().endswith(('.tif', '.tiff')):
+            painter_pixmap = QPixmap("temp_image.png")
+        else:
+            painter_pixmap = QPixmap(self.image_path)
         painter = QPainter(painter_pixmap)
         font = QFont("Arial", 12)
         painter.setFont(font)
