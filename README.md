@@ -15,7 +15,7 @@ modifying them as needed, and saving the edits to XML files.
 1 - Clone the repository:
 
 ```
-git clone git@github.com:qurator-spk/OCR_textline_editor.git
+git clone https://github.com/qurator-spk/OCR_textline_editor.git
 ```
 
 2- Install dependencies:
