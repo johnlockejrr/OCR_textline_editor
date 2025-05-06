@@ -42,6 +42,10 @@ class TextlineEditorApp(QMainWindow):
             self.pixmap = QPixmap("temp_image.png")
         else:
             self.pixmap = QPixmap(self.image_path)
+    
+    
+    
+    
         image_width = self.pixmap.width()
         image_height = self.pixmap.height()
         
@@ -60,6 +64,7 @@ class TextlineEditorApp(QMainWindow):
                 Qt.KeepAspectRatio,
                 Qt.SmoothTransformation,
             )
+            
 
         
         self.setWindowTitle("Textline Editor")
@@ -122,7 +127,46 @@ class TextlineEditorApp(QMainWindow):
 
         self.zoom_out_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self)
         self.zoom_out_shortcut.activated.connect(self.zoom_out)
+        
+        # Add a menu for changing input files
+        menu_bar = self.menuBar()
+        file_menu = menu_bar.addMenu("File")
+
+        change_input_action = file_menu.addAction("Change Input")
+        change_input_action.triggered.connect(self.reload_data)
+
+        # Add a button for changing input (if preferred over menu)
+        self.change_input_button = QPushButton("Change Input", self)
+        self.change_input_button.clicked.connect(self.reload_data)
+        self.layout.addWidget(self.change_input_button)
     
+    
+    def reload_data(self):
+        """Reload the input image and XML file."""
+        image_path = QFileDialog.getOpenFileName(
+            self, "Select Image File", "", "Image Files (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)"
+        )[0]
+        if image_path:
+            self.image_path = image_path
+            if image_path.lower().endswith(('.tif', '.tiff')):
+                tiff_image = Image.open(self.image_path)
+                tiff_image.save("temp_image.png")
+                self.pixmap = QPixmap("temp_image.png")
+            else:
+                self.pixmap = QPixmap(self.image_path)
+
+        xml_path = QFileDialog.getOpenFileName(
+            self, "Select XML File", "", "XML Files (*.xml)"
+        )[0]
+        if xml_path:
+            self.xml_path = xml_path
+            #self.return_textline_of_xml()  # Reload textlines from the new XML file
+
+        # Update the UI with the new data
+        self.image_label.setPixmap(self.pixmap)
+        self.textlines = []  # Reset textlines
+        self.return_textline_of_xml()  # Load textlines for the new file
+        
     def zoom_in(self):
         """Increase the font size of the text editor only."""
         current_font = self.text_edit.font()
@@ -212,6 +256,7 @@ class TextlineEditorApp(QMainWindow):
                                         dict_in['id'] = id_textline
                                         #print(dict_in)
                                         self.textlines.append(dict_in)
+                                        
 
 
     def highlight_textline(self, x, y, persistent=None):
@@ -282,7 +327,6 @@ class TextlineEditorApp(QMainWindow):
             self, "Save Textlines to File", "", "xml Files (*.xml);;All Files (*)"
         )
         if file_path:
-            print(self.textlines)
             tree1 = ET.parse(self.xml_path, parser = ET.XMLParser(encoding="utf-8"))
             root1=tree1.getroot()
             alltags=[elem.tag for elem in root1.iter()]
